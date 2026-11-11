@@ -138,29 +138,38 @@ html.lenis, html.lenis body { height: auto; }
   position: fixed; z-index: 15;
   left: 50%; bottom: calc(3.25rem + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
-  height: 3.25rem; padding: 0 2.75rem;
+  height: 3.25rem; padding: 0 2.75rem; white-space: nowrap;
   font-weight: 600; letter-spacing: .03em;
   box-shadow: 0 10px 40px rgb(232 184 74 / .3);
 }
 
 .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; margin-top: .25rem; }
 
-/* Auto-scroll toggle (home story) */
-.autoplay {
+/* "Scroll down" hint (home hero) */
+.scroll-hint {
   position: fixed; z-index: 15;
   right: var(--gutter); bottom: calc(3.25rem + env(safe-area-inset-bottom, 0px));
-  display: inline-flex; align-items: center; gap: .55rem;
-  height: 3.25rem; padding: 0 1.2rem 0 1rem; border-radius: 999px;
-  border: 1px solid var(--gold-deep); background: rgb(43 18 76 / .7);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  color: var(--gold-hi); font: 500 .85rem/1 var(--sans); letter-spacing: .02em;
-  cursor: pointer; transition: border-color .25s, background-color .25s;
+  height: 3.25rem; display: inline-flex; align-items: center; gap: .7rem;
+  color: var(--gold-soft); font: 500 .72rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase;
+  pointer-events: none;
 }
-.autoplay:hover { border-color: var(--gold); background: rgb(58 26 99 / .85); }
-.autoplay:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
-.autoplay__icon { width: 1.05rem; height: 1.05rem; fill: currentColor; }
-.autoplay__pause, .autoplay[aria-pressed="true"] .autoplay__play { display: none; }
-.autoplay[aria-pressed="true"] .autoplay__pause { display: inline; }
+.scroll-hint__mouse {
+  position: relative; width: 1.5rem; height: 2.35rem;
+  border: 1.5px solid var(--gold-soft); border-radius: 1rem;
+}
+.scroll-hint__wheel {
+  position: absolute; left: 50%; top: .45rem;
+  width: 3px; height: .5rem; margin-left: -1.5px; border-radius: 3px;
+  background: var(--gold);
+  animation: wheel 1.8s cubic-bezier(.4, 0, .2, 1) infinite;
+}
+@keyframes wheel {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  70% { transform: translateY(.75rem); opacity: 0; }
+  100% { transform: translateY(.75rem); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .scroll-hint__wheel { animation: none; } }
 
 /* split text */
 .word { display: inline-block; overflow: hidden; padding-bottom: .1em; vertical-align: top; }
@@ -358,8 +367,10 @@ html.lenis, html.lenis body { height: auto; }
   .nav { gap: .9rem; font-size: .78rem; letter-spacing: 0; white-space: nowrap; }
   .nav__wide { display: none; }
   /* phones: icon-only, so it never crowds the centred Order now button */
-  .autoplay { width: 3.25rem; padding: 0; justify-content: center; }
-  .autoplay__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  /* phones: words under the mouse, so it fits beside the centred Order now */
+  .scroll-hint { flex-direction: column; justify-content: flex-end; height: auto; gap: .4rem; font-size: .56rem; letter-spacing: .14em; }
+  .scroll-hint__mouse { width: 1.3rem; height: 2.05rem; }
+  .scroll-hint__label { width: min-content; text-align: center; line-height: 1.35; }
   .form__row, .form__row--3 { grid-template-columns: 1fr; }
   /* compact logo + name so both fit beside the three links */
   .brand { gap: .45rem; flex: none; }
@@ -382,4 +393,5 @@ html.lenis, html.lenis body { height: auto; }
   .brand { gap: .35rem; }
   .brand__mark { height: 1.9rem; }
   .brand__word { height: .68rem; }
+  .order-fab { padding: 0 1.9rem; }
 }

@@ -108,6 +108,9 @@ function buildTimeline() {
   // Camera: orbit + push-in on the pot, linear with scroll.
   tl.to(state, { frame: FRAME_COUNT - 1, ease: 'none', duration: FRAME_END, onUpdate: draw }, 0);
 
+  // "Scroll down" hint goes as soon as scrolling starts.
+  tl.to('.scroll-hint', { autoAlpha: 0, y: 12, duration: 0.03 }, 0.005);
+
   // Scene 1: headline words part sideways as the camera moves in.
   tl.to(scene(1).querySelector('.scene__foot'), { autoAlpha: 0, y: 30, duration: 0.06 }, 0.02);
   tl.to(heroWords, {
@@ -144,54 +147,10 @@ function buildTimeline() {
   // element shrinks its edges into view as hard straight lines.
   tl.to(state, { zoom: 0.72, duration: 0.08, onUpdate: draw }, 0.76);
   reveal(4, 0.8, null);
-  // Floating Order now and Auto-scroll give way to scene 4's own buttons.
-  tl.to('.order-fab, .autoplay', { autoAlpha: 0, y: 20, duration: 0.04 }, 0.77);
+  // Floating Order now gives way to scene 4's own buttons.
+  tl.to('.order-fab', { autoAlpha: 0, y: 20, duration: 0.04 }, 0.77);
 
   return tl;
-}
-
-// ── Auto-scroll: play the story hands-free ───────────────
-const AUTOPLAY_MS = 24000; // whole story, top to bottom, at an even pace
-
-function wireAutoplay(tl) {
-  const btn = document.querySelector('.autoplay');
-  const label = btn.querySelector('.autoplay__label');
-  const st = tl.scrollTrigger;
-  let raf = 0, last = 0, y = 0;
-
-  const current = () => (lenis ? lenis.scroll : scrollY);
-  const scrollToY = (v) => (lenis ? lenis.scrollTo(v, { immediate: true, force: true }) : scrollTo(0, v));
-  const setOn = (on) => {
-    btn.setAttribute('aria-pressed', String(on));
-    label.textContent = on ? 'Pause' : 'Auto-scroll';
-    btn.setAttribute('aria-label', on ? 'Pause auto-scroll' : 'Auto-scroll through the story');
-  };
-  const stop = () => { cancelAnimationFrame(raf); raf = 0; setOn(false); };
-
-  function step(now) {
-    const speed = (st.end - st.start) / AUTOPLAY_MS; // px per ms
-    y = Math.min(y + speed * Math.min(now - last, 64), st.end); // cap dt after a stalled frame
-    last = now;
-    scrollToY(y);
-    if (y >= st.end) return stop();
-    raf = requestAnimationFrame(step);
-  }
-
-  btn.addEventListener('click', () => {
-    if (raf) return stop();
-    y = current() >= st.end - 2 ? st.start : current(); // at the end: replay from the top
-    if (y !== current()) scrollToY(y);
-    last = performance.now();
-    setOn(true);
-    raf = requestAnimationFrame(step);
-  });
-
-  // The user always wins: any manual scroll, touch or key press stops it.
-  const userInput = (e) => { if (raf && !btn.contains(e.target)) stop(); };
-  for (const type of ['wheel', 'touchstart', 'keydown', 'pointerdown']) {
-    addEventListener(type, userInput, { passive: true });
-  }
-  setOn(false);
 }
 
 // ── Home: solid header once the content scrolls under it ──
@@ -242,13 +201,12 @@ preload((p) => { bar.style.width = `${p * 100}%`; }).then(() => {
   lenis?.scrollTo(0, { immediate: true, force: true });
   resize();
   addEventListener('resize', resize);
-  const tl = buildTimeline();
-  wireAutoplay(tl);
+  buildTimeline();
   wireHeader();
   decodeRest();
 
   document.getElementById('loader').classList.add('is-done');
   gsap.from('.stage__canvas', { autoAlpha: 0, scale: 1.04, duration: 1.4, ease: 'power3.out' });
   gsap.from('#heroTitle', { autoAlpha: 0, y: 40, duration: 1.2, ease: 'power3.out', delay: 0.15 });
-  gsap.from('.header, [data-scene="1"] .scene__foot, .order-fab, .autoplay', { autoAlpha: 0, duration: 1, delay: 0.5 });
+  gsap.from('.header, [data-scene="1"] .scene__foot, .order-fab, .scroll-hint', { autoAlpha: 0, duration: 1, delay: 0.5 });
 });
