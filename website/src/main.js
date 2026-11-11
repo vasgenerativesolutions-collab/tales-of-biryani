@@ -4,16 +4,22 @@ import Lenis from 'lenis';
 import './reveal.js';
 
 gsap.registerPlugin(ScrollTrigger);
+// Mobile address bars resize the viewport while scrolling; don't recalculate
+// the whole scroll timeline for that (it causes a visible jump at the start).
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 const FRAME_COUNT = 190;
 const FRAME_END = 0.78; // timeline point where the camera reaches the close-up
-const frameSrc = (i) => `${import.meta.env.BASE_URL}frames/f_${String(i).padStart(3, '0')}.webp`;
+// Phones get the lighter 960px set: half the decode work, faster download.
+const SMALL_SCREEN = Math.min(screen.width, screen.height) < 700;
+const FRAME_DIR = SMALL_SCREEN ? 'frames-sm' : 'frames';
+const frameSrc = (i) => `${import.meta.env.BASE_URL}${FRAME_DIR}/f_${String(i).padStart(3, '0')}.webp`;
 
 const canvas = document.getElementById('bowl');
 const ctx = canvas.getContext('2d');
 const frames = [];
-const state = { frame: 0 };
-let drawn = -1;
+const state = { frame: 0, zoom: 1 };
+let drawn = -1, drawnZoom = 1;
 
 // ── Smooth scroll ────────────────────────────────────────
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -25,7 +31,12 @@ if (lenis) {
 }
 
 // ── Canvas ───────────────────────────────────────────────
+let lastWidth = 0;
 function resize() {
+  // On touch devices the height changes as the address bar shows/hides.
+  // Reallocating the canvas then flickers, so only react to width changes.
+  if (SMALL_SCREEN && innerWidth === lastWidth) return;
+  lastWidth = innerWidth;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = innerWidth * dpr;
   canvas.height = innerHeight * dpr;
@@ -36,13 +47,21 @@ function resize() {
 function draw() {
   const i = Math.round(state.frame);
   const img = frames[i];
-  if (i === drawn || !img?.complete) return;
+  if ((i === drawn && state.zoom === drawnZoom) || !img?.complete) return;
   drawn = i;
+  drawnZoom = state.zoom;
 
   const cw = canvas.width, ch = canvas.height;
   const portrait = ch > cw;
-  // Desktop: frame fills ~74% of the height. Phone: pot + lid fit the width.
-  const scale = portrait ? (cw * 1.5) / img.width : (ch * 0.74) / img.height;
+  // Desktop: frame fills ~74% of the height.
+  // Phone: the whole pot fits at the start (1.5x width); as the camera pushes in,
+  // ease down to 1x so the close-up's soft oval edge stays on screen instead of
+  // being cut into straight lines by the screen edges.
+  // Never wider than the window: the close-up's soft oval must always fit, or
+  // the window edges cut it into straight lines (narrow desktop windows too).
+  const t = i / (FRAME_COUNT - 1);
+  const fit = portrait ? (cw * (1.5 - 0.5 * t)) / img.width : Math.min((ch * 0.74) / img.height, cw / img.width);
+  const scale = fit * state.zoom;
   const w = img.width * scale, h = img.height * scale;
   const cy = ch * (portrait ? 0.52 : 0.51);
   ctx.clearRect(0, 0, cw, ch); // frames are transparent cut-outs over the CSS backdrop
@@ -121,7 +140,9 @@ function buildTimeline() {
     tl.to(badges, { autoAlpha: 0, scale: 0.85, duration: 0.04, stagger: 0.01 }, 0.65);
   });
   // Scene 4: the bowl steps back so the heading and buttons frame it, not cover it.
-  tl.to('.stage__canvas', { scale: 0.72, duration: 0.08, transformOrigin: '50% 53%' }, 0.76);
+  // Zoom is applied inside draw(), not by scaling the canvas element: scaling the
+  // element shrinks its edges into view as hard straight lines.
+  tl.to(state, { zoom: 0.72, duration: 0.08, onUpdate: draw }, 0.76);
   reveal(4, 0.8, null);
   // Floating Order now gives way to scene 4's own buttons.
   tl.to('.order-fab', { autoAlpha: 0, y: 20, duration: 0.04 }, 0.77);
@@ -132,23 +153,37 @@ function buildTimeline() {
 // ── Home: solid header once the content scrolls under it ──
 function wireHeader() {
   const header = document.querySelector('.header');
+  // Solid from the moment the content reaches the header, until you scroll back up
+  // past that point (no end, so it stays solid at the very bottom of the page).
   ScrollTrigger.create({
-    trigger: '.content', start: 'top 72px', end: 'max',
-    onToggle: (self) => header.classList.toggle('is-solid', self.isActive),
+    trigger: '.content', start: 'top 72px',
+    onEnter: () => header.classList.add('is-solid'),
+    onLeaveBack: () => header.classList.remove('is-solid'),
   });
 }
 
 // ── Boot: preload frames, then reveal ────────────────────
+const WARM_FRAMES = 40; // decoded before the page appears, so the first scroll is smooth
+
 function preload(onProgress) {
   let loaded = 0;
   return Promise.all(
     Array.from({ length: FRAME_COUNT }, (_, i) => new Promise((res) => {
       const img = new Image();
+      img.decoding = 'async';
       img.onload = img.onerror = () => { onProgress(++loaded / FRAME_COUNT); res(); };
       img.src = frameSrc(i);
       frames[i] = img;
     })),
-  );
+  ).then(() => Promise.all(frames.slice(0, WARM_FRAMES).map((img) => img.decode().catch(() => {}))));
+}
+
+// Decode the remaining frames one at a time in idle moments, ahead of the
+// scroll, instead of on first draw (which stutters on phones).
+function decodeRest(i = WARM_FRAMES) {
+  if (i >= FRAME_COUNT) return;
+  const next = () => frames[i].decode().catch(() => {}).then(() => decodeRest(i + 1));
+  'requestIdleCallback' in window ? requestIdleCallback(next) : setTimeout(next, 16);
 }
 
 const bar = document.getElementById('loaderBar');
@@ -165,6 +200,7 @@ preload((p) => { bar.style.width = `${p * 100}%`; }).then(() => {
   addEventListener('resize', resize);
   buildTimeline();
   wireHeader();
+  decodeRest();
 
   document.getElementById('loader').classList.add('is-done');
   gsap.from('.stage__canvas', { autoAlpha: 0, scale: 1.04, duration: 1.4, ease: 'power3.out' });

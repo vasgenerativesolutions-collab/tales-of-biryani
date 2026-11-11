@@ -26,6 +26,18 @@ const pages = {
     description: 'Overnight marinade, par-cooked 1121 basmati, a dough-sealed handi and 45 minutes on dum: the four steps behind our biryani.',
     crumb: 'How we make it',
   },
+  '/bulk-orders/': {
+    file: 'bulk-orders/index.html',
+    title: 'Bulk Orders for Parties and Events | Tales of Biryani',
+    description: 'Dum biryani in bulk for parties, office lunches and family events. Send the date, headcount and dishes to request a quote.',
+    crumb: 'Bulk orders',
+  },
+  '/reserve/': {
+    file: 'reserve/index.html',
+    title: 'Reserve a Table | Tales of Biryani',
+    description: 'Request a table at Tales of Biryani: choose a date, time and number of guests.',
+    crumb: 'Reserve a table',
+  },
   '/404.html': {
     file: '404.html',
     title: 'Page Not Found | Tales of Biryani',
@@ -34,9 +46,12 @@ const pages = {
   },
 };
 
+// [href, label, desktopOnly] — phones show the three links customers need most.
 const nav = [
-  ['/how-we-make-it/', 'How we make it'],
+  ['/how-we-make-it/', 'How we make it', true],
   ['/menu/', 'Menu'],
+  ['/bulk-orders/', 'Bulk orders'],
+  ['/reserve/', 'Reserve'],
 ];
 
 // ── Helpers ───────────────────────────────────────────────
@@ -146,7 +161,7 @@ function menuSchema() {
 
 function header(path) {
   const links = nav
-    .map(([href, label]) => `<a href="${href}"${href === path ? ' aria-current="page"' : ''}>${label}</a>`)
+    .map(([href, label, wide]) => `<a href="${href}"${wide ? ' class="nav__wide"' : ''}${href === path ? ' aria-current="page"' : ''}>${label}</a>`)
     .join('\n        ');
   return partial('header.html').replace('<!--@nav-->', links);
 }
@@ -188,7 +203,8 @@ function seo() {
           .replace('<!--@head-->', headTags(path))
           .replace('<!--@header-->', header(path))
           .replace('<!--@breadcrumbs-->', breadcrumbs(path))
-          .replace('<!--@footer-->', footer()));
+          .replace('<!--@footer-->', footer())
+          .replaceAll('{{whatsapp}}', (site.whatsapp || '').replace(/\D/g, '')));
       },
     },
     generateBundle() {

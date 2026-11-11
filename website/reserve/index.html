@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!--@head-->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="page">
+    <!--@header-->
+
+    <main id="content">
+      <section class="page-hero">
+        <!--@breadcrumbs-->
+        <h1 class="title title--page">Reserve a table</h1>
+        <p class="lede">Tell us the day, the time and how many of you are coming, and we will confirm your table.</p>
+      </section>
+
+      <section class="section section--tight">
+        <form class="form fade-up" data-request="Table reservation" data-whatsapp="{{whatsapp}}">
+          <div class="form__row">
+            <label class="field">
+              <span class="field__label">Name</span>
+              <input name="Name" type="text" autocomplete="name" required />
+            </label>
+            <label class="field">
+              <span class="field__label">Phone</span>
+              <input name="Phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9 +\-\(\)]{7,}" title="Phone number, digits only (spaces, + and - are fine)" required />
+            </label>
+          </div>
+          <div class="form__row form__row--3">
+            <label class="field">
+              <span class="field__label">Date</span>
+              <input name="Date" type="date" required data-min-today />
+            </label>
+            <label class="field">
+              <span class="field__label">Time</span>
+              <input name="Time" type="time" required />
+            </label>
+            <label class="field">
+              <span class="field__label">Guests</span>
+              <input name="Guests" type="number" min="1" max="50" value="2" required />
+            </label>
+          </div>
+          <label class="field">
+            <span class="field__label">Notes <span class="field__hint">(optional)</span></span>
+            <textarea name="Notes" rows="4" placeholder="Occasion, seating preference, allergies"></textarea>
+          </label>
+          <div class="form__actions">
+            <button class="btn btn--light" type="submit">Request a table</button>
+            <p class="form__note" data-off-note hidden>Online requests are not open yet.</p>
+          </div>
+        </form>
+        <p class="next fade-up">Ordering for a large group instead? <a href="/bulk-orders/">Request a bulk order</a>.</p>
+      </section>
+    </main>
+
+    <!--@footer-->
+
+    <script type="module" src="/src/forms.js"></script>
+  </body>
+</html>

@@ -77,7 +77,7 @@ def square(mark, size, bg=None, fill=0.86):
 
 def icons(mark):
     from PIL import Image
-    plum = (25, 0, 25)  # BGR of #190019
+    plum = (76, 18, 43)  # BGR of #2B124C, the site background
     cv2.imwrite(os.path.join(DST, 'favicon-32.png'), square(mark, 32, fill=0.95))
     cv2.imwrite(os.path.join(DST, 'apple-touch-icon.png'), square(mark, 180, bg=plum, fill=0.7))
     big = square(mark, 256, fill=0.95)
@@ -94,7 +94,7 @@ def share_image(logo):
     W, H = 1200, 630
     yy, xx = np.mgrid[0:H, 0:W]
     glow = np.clip(1 - np.hypot((xx - 820) / 520, (yy - 330) / 360), 0, 1)[..., None]
-    night, indigo = np.array([25, 0, 25], np.float32), np.array([76, 18, 43], np.float32)  # BGR
+    night, indigo = np.array([76, 18, 43], np.float32), np.array([99, 26, 58], np.float32)  # BGR #2B124C -> #3A1A63
     canvas = night + (indigo - night) * glow
     bowl = cv2.imread(os.path.join(DST, 'frames', 'f_000.webp'), cv2.IMREAD_UNCHANGED)
     bowl = cv2.resize(bowl, (880, 495), interpolation=cv2.INTER_AREA)

@@ -10,8 +10,12 @@ export default {
   // Required for canonical tags, sitemap.xml, og:url/og:image and breadcrumb schema.
   url: '',
 
+  // WhatsApp number that receives Reserve-a-table and Bulk-order requests,
+  // e.g. '+91 98xxxxxxxx'. Empty = the forms show but submitting is switched off.
+  whatsapp: '',
+
   locale: 'en_IN',
-  themeColor: '#190019',
+  themeColor: '#2B124C',
 
   // Local business details (schema.org Restaurant + footer).
   business: {

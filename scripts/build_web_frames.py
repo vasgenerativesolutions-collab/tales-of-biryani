@@ -20,10 +20,12 @@ import cv2
 import numpy as np
 
 OUT_W, OUT_H = 1280, 720
+SM_W, SM_H = 960, 540   # lighter set for phones: faster download and decode
 CHROMA_MIN = 16      # Lab chroma: backdrop ~3, shadow < ~20 at the rim, clay 30+
 CHROMA_MIN_TOP = 8   # upper half: steam over the rim lowers chroma, no shadows there
 WEBP_QUALITY = 82
 DST = os.path.join(os.path.dirname(__file__), '..', 'website', 'public', 'frames')
+DST_SM = DST + '-sm'
 
 
 def watermark_mask(first_frame):
@@ -95,7 +97,8 @@ def main(src_dir):
     paths = sorted(glob.glob(os.path.join(src_dir, '*.png')))
     assert paths, f'no PNGs in {src_dir}'
     os.makedirs(DST, exist_ok=True)
-    for old in glob.glob(os.path.join(DST, 'f_*.webp')):
+    os.makedirs(DST_SM, exist_ok=True)
+    for old in glob.glob(os.path.join(DST, 'f_*.webp')) + glob.glob(os.path.join(DST_SM, 'f_*.webp')):
         os.remove(old)
 
     first = cv2.imread(paths[0])
@@ -121,9 +124,12 @@ def main(src_dir):
         # again after recentring: the shift can bring cut-off content to the edge
         bgra[..., 3] = (bgra[..., 3] * out_oval).astype(np.uint8)
         cv2.imwrite(os.path.join(DST, f'f_{i:03d}.webp'), bgra, [cv2.IMWRITE_WEBP_QUALITY, WEBP_QUALITY])
+        sm = cv2.resize(bgra, (SM_W, SM_H), interpolation=cv2.INTER_AREA)
+        cv2.imwrite(os.path.join(DST_SM, f'f_{i:03d}.webp'), sm, [cv2.IMWRITE_WEBP_QUALITY, WEBP_QUALITY])
 
     mb = sum(os.path.getsize(f) for f in glob.glob(os.path.join(DST, 'f_*.webp'))) / 2**20
-    print(f'{len(paths)} frames -> {DST} ({mb:.1f} MB)')
+    sm_mb = sum(os.path.getsize(f) for f in glob.glob(os.path.join(DST_SM, 'f_*.webp'))) / 2**20
+    print(f'{len(paths)} frames -> {DST} ({mb:.1f} MB), phone set ({sm_mb:.1f} MB)')
 
 
 if __name__ == '__main__':
