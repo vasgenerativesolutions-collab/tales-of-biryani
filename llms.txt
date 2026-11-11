@@ -1,0 +1,9 @@
+# Tales of Biryani
+
+> Chicken dum biryani layered with aged 1121 basmati and Kashmiri saffron, sealed with dough and slow-cooked for 45 minutes in a clay handi.
+
+## Pages
+
+- [Home](/tales-of-biryani/): Chicken dum biryani layered with aged 1121 basmati and Kashmiri saffron, sealed with dough and slow-cooked for 45 minutes in a clay handi.
+- [Menu](/tales-of-biryani/menu/): Chicken, mutton, veg and egg dum biryani, with mirchi ka salan and double ka meetha. The Tales of Biryani menu.
+- [How we make it](/tales-of-biryani/how-we-make-it/): Overnight marinade, par-cooked 1121 basmati, a dough-sealed handi and 45 minutes on dum: the four steps behind our biryani.
