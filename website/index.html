@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!--@head-->
+    <!-- Always open at the top: no browser scroll restore on reload -->
+    <script>history.scrollRestoration = 'manual'; scrollTo(0, 0);</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="home">
+    <div class="loader" id="loader" aria-hidden="true">
+      <img class="loader__logo" src="/logo-full.png" alt="" width="1304" height="1089" />
+      <div class="loader__bar"><span id="loaderBar"></span></div>
+    </div>
+
+    <!--@header-->
+
+    <main id="content">
+      <div class="stage">
+        <div class="stage__glow" aria-hidden="true"></div>
+        <canvas class="stage__canvas" id="bowl" role="img" aria-label="Chicken dum biryani in a clay handi, the camera slowly moving in"></canvas>
+        <div class="stage__scrim" aria-hidden="true"></div>
+
+        <section class="scene" data-scene="1">
+          <h1 class="display display--top" id="heroTitle">Dum biryani</h1>
+          <div class="scene__foot">
+            <p class="lede">Chicken and aged basmati, layered in a clay handi and slow-cooked under a dough seal.</p>
+          </div>
+        </section>
+
+        <section class="scene" data-scene="2">
+          <div class="scene__foot">
+            <p class="label reveal-fade"><span>01</span>The method</p>
+            <h2 class="display display--sm reveal">Sealed and slow-cooked</h2>
+            <p class="lede reveal-fade">
+              Each handi is sealed with dough and cooked on low heat for 45 minutes. The steam
+              stays inside, so the rice takes on the flavour of the chicken and spices.
+            </p>
+          </div>
+        </section>
+
+        <section class="scene" data-scene="3">
+          <div class="scene__head">
+            <p class="label reveal-fade"><span>02</span>Ingredients</p>
+            <h2 class="display display--sm reveal">What goes in</h2>
+          </div>
+          <ul class="badges">
+            <li class="badge" style="--x: 21%; --y: 40%"><span class="badge__dot"></span>Aged 1121 basmati</li>
+            <li class="badge" style="--x: 79%; --y: 36%"><span class="badge__dot"></span>Desi ghee</li>
+            <li class="badge" style="--x: 19%; --y: 72%"><span class="badge__dot"></span>Kashmiri saffron</li>
+            <li class="badge" style="--x: 81%; --y: 76%"><span class="badge__dot"></span>Chicken, marinated overnight</li>
+          </ul>
+        </section>
+
+        <section class="scene" data-scene="4">
+          <div class="scene__head">
+            <p class="label reveal-fade"><span>03</span>The menu</p>
+            <h2 class="display reveal">From the handi</h2>
+          </div>
+          <div class="scene__foot">
+            <p class="lede reveal-fade">Chicken, mutton, veg and egg dum biryani, with mirchi ka salan and double ka meetha on the side.</p>
+            <div class="actions reveal-fade">
+              <a href="/menu/" class="btn btn--light">See the menu</a>
+              <a href="/how-we-make-it/" class="btn btn--outline">How we make it</a>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Always-visible order button, bottom centre -->
+      <a href="/menu/" class="btn btn--light order-fab">Order now</a>
+
+      <div class="scroll-track" aria-hidden="true"></div>
+
+      <div class="content">
+        <div class="marquee" aria-hidden="true">
+          <div class="marquee__track">
+            <span>Dum biryani</span><span>Aged 1121 basmati</span><span>Desi ghee</span><span>Kashmiri saffron</span><span>Dough-sealed handi</span><span>45 minutes on dum</span>
+            <span>Dum biryani</span><span>Aged 1121 basmati</span><span>Desi ghee</span><span>Kashmiri saffron</span><span>Dough-sealed handi</span><span>45 minutes on dum</span>
+          </div>
+        </div>
+
+        <section class="section" aria-labelledby="explore-title">
+          <div class="section__head fade-up">
+            <p class="label"><span>04</span>Explore</p>
+            <h2 class="title" id="explore-title">More from the kitchen</h2>
+          </div>
+          <div class="cards">
+            <a class="card fade-up" href="/menu/">
+              <img class="card__img" src="/frames/f_189.webp" alt="Close-up of chicken pieces, basmati and star anise in the handi" width="1280" height="720" loading="lazy" />
+              <span class="card__body">
+                <span class="card__title">The menu</span>
+                <span class="card__text">Four dum biryanis, a salan and a dessert.</span>
+                <span class="card__link">See the menu</span>
+              </span>
+            </a>
+            <a class="card fade-up" href="/how-we-make-it/">
+              <img class="card__img" src="/frames/f_000.webp" alt="Clay handi of dum biryani with its lid set to one side" width="1280" height="720" loading="lazy" />
+              <span class="card__body">
+                <span class="card__title">How we make it</span>
+                <span class="card__text">Marinate, par-cook, seal, dum. The four steps behind every handi.</span>
+                <span class="card__link">Read the method</span>
+              </span>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!--@footer-->
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

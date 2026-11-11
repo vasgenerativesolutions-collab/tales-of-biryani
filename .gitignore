@@ -1,0 +1,15 @@
+# Dependencies & build output
+node_modules/
+dist/
+
+# Large source media (kept locally, not in git)
+*.mp4
+*.zip
+extracted_assets/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
