@@ -77,6 +77,15 @@
       <!-- Always-visible order button, bottom centre -->
       <a href="/menu/" class="btn btn--light order-fab">Order now</a>
 
+      <!-- Plays the scroll story hands-free; any user scroll/touch/key stops it -->
+      <button class="autoplay" type="button" aria-pressed="false">
+        <svg class="autoplay__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path class="autoplay__play" d="M8 5.5v13l11-6.5z" />
+          <path class="autoplay__pause" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" />
+        </svg>
+        <span class="autoplay__label">Auto-scroll</span>
+      </button>
+
       <div class="scroll-track" aria-hidden="true"></div>
 
       <div class="content">

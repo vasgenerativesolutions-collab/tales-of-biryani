@@ -145,6 +145,23 @@ html.lenis, html.lenis body { height: auto; }
 
 .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; margin-top: .25rem; }
 
+/* Auto-scroll toggle (home story) */
+.autoplay {
+  position: fixed; z-index: 15;
+  right: var(--gutter); bottom: calc(3.25rem + env(safe-area-inset-bottom, 0px));
+  display: inline-flex; align-items: center; gap: .55rem;
+  height: 3.25rem; padding: 0 1.2rem 0 1rem; border-radius: 999px;
+  border: 1px solid var(--gold-deep); background: rgb(43 18 76 / .7);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  color: var(--gold-hi); font: 500 .85rem/1 var(--sans); letter-spacing: .02em;
+  cursor: pointer; transition: border-color .25s, background-color .25s;
+}
+.autoplay:hover { border-color: var(--gold); background: rgb(58 26 99 / .85); }
+.autoplay:focus-visible { outline: 1px solid var(--gold); outline-offset: 4px; }
+.autoplay__icon { width: 1.05rem; height: 1.05rem; fill: currentColor; }
+.autoplay__pause, .autoplay[aria-pressed="true"] .autoplay__play { display: none; }
+.autoplay[aria-pressed="true"] .autoplay__pause { display: inline; }
+
 /* split text */
 .word { display: inline-block; overflow: hidden; padding-bottom: .1em; vertical-align: top; }
 .word > span, .slide { display: inline-block; will-change: transform; }
@@ -337,10 +354,17 @@ html.lenis, html.lenis body { height: auto; }
 
 /* ── Mobile ─────────────────────────────────────────── */
 @media (max-width: 720px) {
-  .nav { gap: 1.1rem; font-size: .8rem; }
+  .header { gap: .75rem; }
+  .nav { gap: .9rem; font-size: .78rem; letter-spacing: 0; white-space: nowrap; }
   .nav__wide { display: none; }
+  /* phones: icon-only, so it never crowds the centred Order now button */
+  .autoplay { width: 3.25rem; padding: 0; justify-content: center; }
+  .autoplay__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .form__row, .form__row--3 { grid-template-columns: 1fr; }
-  .brand__word { display: none; }
+  /* compact logo + name so both fit beside the three links */
+  .brand { gap: .45rem; flex: none; }
+  .brand__mark { height: 2.1rem; }
+  .brand__word { height: .78rem; }
   .display { font-size: clamp(3rem, 16vw, 4.6rem); }
   .display--sm { font-size: clamp(2.2rem, 10.5vw, 3.2rem); }
   .display--top, .scene__head { top: 11vh; }
@@ -349,4 +373,13 @@ html.lenis, html.lenis body { height: auto; }
   .badge:nth-child(2) { --x: 72%; --y: 39%; }
   .badge:nth-child(3) { --x: 30%; --y: 64%; }
   .badge:nth-child(4) { --x: 62%; --y: 70%; }
+}
+
+/* Very small phones (≤ 345px): tighter header so logo, name and links still fit */
+@media (max-width: 345px) {
+  .header { padding-left: .9rem; padding-right: .9rem; gap: .5rem; }
+  .nav { gap: .6rem; font-size: .72rem; }
+  .brand { gap: .35rem; }
+  .brand__mark { height: 1.9rem; }
+  .brand__word { height: .68rem; }
 }
