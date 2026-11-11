@@ -7,7 +7,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const FRAME_COUNT = 190;
 const FRAME_END = 0.78; // timeline point where the camera reaches the close-up
-const frameSrc = (i) => `/frames/f_${String(i).padStart(3, '0')}.webp`;
+const frameSrc = (i) => `${import.meta.env.BASE_URL}frames/f_${String(i).padStart(3, '0')}.webp`;
 
 const canvas = document.getElementById('bowl');
 const ctx = canvas.getContext('2d');

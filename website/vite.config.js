@@ -3,6 +3,10 @@ import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 import site from './site.config.js';
 
+// Where the site is served from: '/' locally or on a custom domain,
+// '/tales-of-biryani/' on GitHub Pages (set by the deploy workflow).
+const base = process.env.BASE_PATH || '/';
+
 // ── Pages: slug → file + per-page SEO ─────────────────────
 const pages = {
   '/': {
@@ -166,18 +170,26 @@ function breadcrumbs(path) {
   return `<nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">${p.crumb}</li></ol></nav>`;
 }
 
+// Prefix root-absolute links/images with the base path (no-op when base is '/').
+const withBase = (html) =>
+  html.replace(/(href|src)="\/(?!\/)([^"]*)"/g, (m, attr, rest) =>
+    ('/' + rest).startsWith(base) ? m : `${attr}="${base}${rest}"`);
+
 // ── Plugin ────────────────────────────────────────────────
 function seo() {
   return {
     name: 'tob-seo',
-    transformIndexHtml(html, ctx) {
-      const path = ctx.path === '/404.html' ? '/404.html' : ctx.path.replace(/index\.html$/, '');
-      if (!pages[path]) return html;
-      return html
-        .replace('<!--@head-->', headTags(path))
-        .replace('<!--@header-->', header(path))
-        .replace('<!--@breadcrumbs-->', breadcrumbs(path))
-        .replace('<!--@footer-->', footer());
+    transformIndexHtml: {
+      order: 'post', // after Vite has resolved its own /src and asset URLs
+      handler(html, ctx) {
+        const path = ctx.path === '/404.html' ? '/404.html' : ctx.path.replace(/index\.html$/, '');
+        if (!pages[path]) return html;
+        return withBase(html
+          .replace('<!--@head-->', headTags(path))
+          .replace('<!--@header-->', header(path))
+          .replace('<!--@breadcrumbs-->', breadcrumbs(path))
+          .replace('<!--@footer-->', footer()));
+      },
     },
     generateBundle() {
       const indexable = Object.keys(pages).filter((p) => !pages[p].noindex);
@@ -206,7 +218,7 @@ function seo() {
           '',
           '## Pages',
           '',
-          ...indexable.map((p) => `- [${pages[p].crumb || 'Home'}](${abs(p) || p}): ${pages[p].description}`),
+          ...indexable.map((p) => `- [${pages[p].crumb || 'Home'}](${abs(p) || base + p.slice(1)}): ${pages[p].description}`),
           '',
         ].join('\n'),
       });
@@ -215,6 +227,7 @@ function seo() {
 }
 
 export default defineConfig({
+  base,
   appType: 'mpa',
   plugins: [seo()],
   build: {
